@@ -3,11 +3,15 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /home/app
 COPY package.json ./
 COPY package-lock.json ./
+COPY scripts ./scripts
+COPY .env.production ./.env.production
 RUN npm i
 
 FROM node:18-alpine AS builder
 WORKDIR /home/app
 COPY --from=dependencies /home/app/node_modules ./node_modules
+COPY --from=dependencies /home/app/scripts ./scripts
+COPY --from=dependencies /home/app/.env.production ./.env.production
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ARG NODE_ENV
